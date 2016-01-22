@@ -1,0 +1,10 @@
+﻿{
+    // ID must be unique on the gallery
+    "Id": "Blame2",
+    "Name": "Blame2",
+    "Author" :  "Hans Yadav",
+    "Website" :  "https://github.com/Voter-Science/TRC-API-Samples",
+    "Description": "View full change history of the sheet. Find anamolies such as if mutliple people changed the same cell. View the full changelist for individual cells.",        
+    "Version": "1.0.0", // User SemVer
+    "Tags": [  "history" ]
+}
