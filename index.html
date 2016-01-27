@@ -1,32 +1,95 @@
 ﻿<!DOCTYPE html>
-
-<script src="https://code.jquery.com/jquery-1.11.3.min.js">
-</script>
-
-<script src="Blame.js"> </script>
-
-<script src="https://trcanvasdata.blob.core.windows.net/code/trc.js"> </script>
-<script src="https://trcanvasdata.blob.core.windows.net/code/plugin.js"></script>
-
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Simple Demo of TRC Rest APIs</title>
+  <meta charset="utf-8" />
+  <title>Simple Demo of TRC Rest APIs</title>
+  <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+  <link rel="stylesheet" href="stylesheets/bootstrap-datepicker3.min.css">
+  <link rel="stylesheet" href="stylesheets/styles.css">
 </head>
 <body>
-    <h2>View changes for a sheet</h2>
+  <div class="container">
+    <section>
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>View changes for a sheet</h2>
 
-    <p>Compressed view - this shows only changes submitted by users. This helps you focus on how the sheet has changed and by whom.</p>
-    <ul>
-        <li>Click on a cell to see the version history for that cell.</li>
-        <li>Cells are highglighted if they were modified by multiple different users. This aids in finding contention such as if a user overwrote another user's value. </p></li>
-    </ul>
-    <table id="deltaGrid" border=1></table>
+          <p>Compressed view - this shows only changes submitted by users. This helps you focus on how the sheet has changed and by whom.</p>
+          <ul>
+              <li>Click on a cell to see the version history for that cell.</li>
+              <li>Cells are highglighted if they were modified by multiple different users. This aids in finding contention such as if a user overwrote another user's value. </p></li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <p>Version history for this cell:</p>
-    <table id="deltasPerCel" border=1></table>
+    <section id="filters">
+      <div class="row">
+        <div class="col-xs-10">
+          <form id="dateFilterForm" class="form-inline" autocomplete="off">
+            <div class="form-group">
+              <label> Start date </label>
+              <input type="text" class="form-control" id="startDatePicker" name="StartDate" data-provide="datepicker"></input>
+            </div>
+            <div class="form-group">
+              <label> End date </label>
+              <input type="text" class="form-control" id="endDatePicker" name="EndDate" data-provide="datepicker"></input>
+            </div>
+            <button type="submit" class="btn btn-primary"> Filter </button>
+            <button class="btn btn-default" id="resetFiltersBtn"> Reset </button>
+          </form>
+        </div>
+        <div class="col-xs-2" id="loadingIndicator"></div>
+      </div>
+    </section>
 
-    <p>Deltas by user</p>
-    <table id="deltas" border=1></table>
+    <section>
+      <div class="row">
+        <div class="col-sm-6">
+          <h3> Edits per User </h3>
+          <div id="deltasPerUserBarChart"></div>
+        </div>
+        <div class="col-sm-6">
+          <h3> Map of usage </h3>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="row">
+        <div class="col-xs-12">
+          <h3> Changes </h3>
+          <table class="table table-bordered table-striped table-hover" id="deltaGrid"></table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="row">
+        <div class="col-xs-12">
+          <h4> Version history for cell:</h4>
+          <table class="table table-bordered table-striped table-hover" id="deltasPerCel"></table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="row" id="responsesHistograms">
+        <div class="col-xs-12">
+          <h3> Histogram of Responses </h3>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="javascripts/bootstrap-datepicker.min.js"></script>
+  <script src="javascripts/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.4.2/randomColor.min.js"></script>
+  <script src="Blame2.js"> </script>
+  <script src="https://trcanvasdata.blob.core.windows.net/code/trc.js"> </script>
+  <script src="https://trcanvasdata.blob.core.windows.net/code/plugin.js"></script>
+  
+  
 </body>
 </html>

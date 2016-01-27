@@ -1,0 +1,39 @@
+section {
+  margin: 30px 0;
+}
+
+#filters {
+  padding: 10px 16px;
+  background-color: #F7F7F9;
+  border: 1px solid #E1E1E8;
+}
+
+.form-inline .form-group {
+  margin: 0 20px;
+}
+
+#loadingIndicator {
+  display: none;
+}
+
+.loading {
+  display: block !important;
+  height: 30px;
+  background-image: url('../images/loading.gif');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.clickable {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#deltasPerUserBarChart {
+  cursor: pointer;
+}
+
+.bar-chart-title {
+  text-decoration: underline;
+}
