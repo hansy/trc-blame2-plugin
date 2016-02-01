@@ -34,7 +34,7 @@ var DeltaGrid = (function () {
 
         // column names that take on discrete values
         // useful for creating histogram of responses
-        this._discreteColumns = ["Gender", "Supporter", "ResultofContact", "Party"];
+        this._discreteColumns = ["Gender", "Supporter", "ResultOfContact", "Party"];
     }
     DeltaGrid.prototype.AddPerCel = function (recId, columnName, delta) {
         // track deltas that modified this specific cell 
@@ -169,14 +169,7 @@ function finishLoading() {
 // returns true if delta meets _filters criteria; false otherwise
 function isFiltered(delta) {
     for (filter in _filters) {
-        if (filter === "User") {
-            var deltaUser  = delta[filter]
-            var filterUser = _filters[filter];
-
-            if (filterUser != "" && filterUser != deltaUser) {
-                return false;
-            }
-        } else if (filter === "Timestamp") {
+        if (filter === "Timestamp") {
             var deltaDate   = delta[filter];
             var filterStart = _filters[filter]["StartDate"];
             var filterEnd   = _filters[filter]["EndDate"];
@@ -188,7 +181,38 @@ function isFiltered(delta) {
             if (filterEnd != "" && filterEnd < deltaDate) {
                 return false;
             } 
-        } 
+        } else if (filter === "Value") {
+            var filterValueObj = _filters[filter];
+
+            for (filterValueName in filterValueObj) {
+                if (filterValueName === "User") {
+                    var deltaUser  = delta[filterValueName];
+                    var filterUser = filterValueObj[filterValueName];
+
+                    if (filterUser != deltaUser) {
+                        return false;
+                    }
+                } else {
+                    var deltaValueObj = delta[filter];
+
+                    for (colName in deltaValueObj) {
+                        if (colName != "RecId") {
+                            var value = filterValueObj[colName];
+
+                            if (value === undefined) {
+                                return false;
+                            } else {
+                                var deltaValue = deltaValueObj[colName][0];
+
+                                if (value != deltaValue) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     return true;
@@ -260,6 +284,11 @@ function renderResponsesHistogram(store) {
         var numDivCol = calculateNumColToRender(numCategories);
         var div = document.getElementById('responsesHistograms');
 
+        // clear children nodes
+        while (div.hasChildNodes()) {
+            div.removeChild(div.lastChild);
+        }
+
         for (category in columnCounts) {
             // create Bootstrap column
             var col = document.createElement('div');
@@ -288,15 +317,9 @@ function renderResponsesHistogram(store) {
                 values.push(responses[key]);
             }
 
-            addBarChart(canvasId, labels, values, randomColor(), doNothing);
+            addBarChart(category, canvasId, labels, values, randomColor(), getFxOnClickBarChart);
         }
         
-    }
-}
-
-// placeholder function
-function doNothing(canvas) {
-    return function(event) {
     }
 }
 
@@ -392,10 +415,10 @@ function renderPerUserCountDeltasChart(deltas) {
         values.push(count);
     }
 
-    addBarChart('deltasPerUserBarChart', labels, values, randomColor(), getFxOnClickBarChart);
+    addBarChart("User", 'deltasPerUserBarChart', labels, values, randomColor(), getFxOnClickBarChart);
 }
 
-function addBarChart(domId, labels, values, fillColor, clickFx) {
+function addBarChart(valueName, domId, labels, values, fillColor, clickFx) {
     var data = {
         labels: labels,
         datasets: [
@@ -426,17 +449,17 @@ function addBarChart(domId, labels, values, fillColor, clickFx) {
     var chart = new Chart(ctx).Bar(data, options); // add bar chart
 
     // add event when bars on chart are clicked
-    canvas.onclick = clickFx(chart);  
+    canvas.onclick = clickFx(valueName, chart);  
 }
 
-function getFxOnClickBarChart(chart) {
+function getFxOnClickBarChart(valueName, chart) {
     return function(event) {
         var activeBars = chart.getBarsAtEvent(event);
 
         if (activeBars[0] != undefined) {
-            _filters["Name"] = activeBars[0].label;
+            _filters["Value"][valueName] = activeBars[0].label;
         } else {
-            _filters["Name"] = "";
+            delete _filters["Value"][valueName];
         }
         
         applyFilters();
@@ -481,7 +504,10 @@ $('#resetFiltersBtn').on('click', function(e) {
 // sets filters back to default (blank) values, clears filter form, and applies
 // re-render of data via applyFilters() function
 function resetFilters() {
-    _filters = { "Name":"", "Timestamp": { "StartDate":"", "EndDate":"" } };
+    _filters = {  
+        "Timestamp": { "StartDate":"", "EndDate": "" },
+        "Value": {}
+    };
 
     $('#dateFilterForm')[0].reset(); // reset form fields
     applyFilters(); 

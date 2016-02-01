@@ -30,7 +30,7 @@ section {
   text-decoration: underline;
 }
 
-#deltasPerUserBarChart {
+canvas {
   cursor: pointer;
 }
 
