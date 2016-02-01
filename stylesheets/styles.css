@@ -32,8 +32,23 @@ section {
 
 canvas {
   cursor: pointer;
+  /*min-height: 300px;*/
 }
 
 .bar-chart-title {
   text-decoration: underline;
+}
+
+.additional-filters {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.filter-name {
+  padding-right: 10px;
+  font-weight: bold;
+}
+
+.filter-value {
+
 }

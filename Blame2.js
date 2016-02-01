@@ -153,7 +153,35 @@ function applyFilters() {
 
     startLoading();
     renderDeltas(_deltas);
+    renderFilterList();
     finishLoading();
+}
+
+function renderFilterList() {
+    var table = $('.additional-filters table');
+    table.html("");
+
+    for (filter in _filters) {
+        if (filter != "Timestamp") {
+            var filterValueObj = _filters[filter];
+
+            for (name in filterValueObj) {
+                var tr = $('<tr>');
+
+                var tdName = $('<td>');
+                tdName.addClass('filter-name');
+                tdName.html(name + ":");
+                tr.append(tdName);
+
+                var tdValue = $('<td>');
+                tdValue.addClass('filter-value');
+                tdValue.html(filterValueObj[name]);
+                tr.append(tdValue);
+
+                table.append(tr);
+            }
+        }
+    }
 }
 
 // shows loading indicator
@@ -281,18 +309,17 @@ function renderResponsesHistogram(store) {
     }
 
     if (numCategories != 0) {
-        var numDivCol = calculateNumColToRender(numCategories);
+        // var numDivCol = calculateNumColToRender(numCategories);
         var div = document.getElementById('responsesHistograms');
 
+        removeDOMChildren(div);
         // clear children nodes
-        while (div.hasChildNodes()) {
-            div.removeChild(div.lastChild);
-        }
+        
 
         for (category in columnCounts) {
             // create Bootstrap column
             var col = document.createElement('div');
-            col.setAttribute('class', "col-sm-12 col-md-"+numDivCol);
+            col.setAttribute('class', "col-sm-12 col-md-6");
             div.appendChild(col);
 
             // add chart title
@@ -317,7 +344,7 @@ function renderResponsesHistogram(store) {
                 values.push(responses[key]);
             }
 
-            addBarChart(category, canvasId, labels, values, randomColor(), getFxOnClickBarChart);
+            addBarChart(category, canvasDiv, labels, values, randomColor(), getFxOnClickBarChart);
         }
         
     }
@@ -415,10 +442,20 @@ function renderPerUserCountDeltasChart(deltas) {
         values.push(count);
     }
 
-    addBarChart("User", 'deltasPerUserBarChart', labels, values, randomColor(), getFxOnClickBarChart);
+    var div = document.getElementById('deltasPerUserBarChart');
+    removeDOMChildren(div);
+
+    addBarChart("User", div, labels, values, randomColor(), getFxOnClickBarChart);
 }
 
-function addBarChart(valueName, domId, labels, values, fillColor, clickFx) {
+function removeDOMChildren(element) {
+    while (element.hasChildNodes()) {
+        element.removeChild(element.lastChild);
+    }
+}
+
+// add bar chart to DOM element (domEl)
+function addBarChart(valueName, domEl, labels, values, fillColor, clickFx) {
     var data = {
         labels: labels,
         datasets: [
@@ -431,19 +468,14 @@ function addBarChart(valueName, domId, labels, values, fillColor, clickFx) {
 
     var options = {
         barShowStroke: false,
-        scaleShowLabels : true
+        scaleShowLabels : true,
+        responsive: true,
+        scaleFontSize: 11
     }
 
-    var div = document.getElementById(domId);
-    var canvas;
-
-    // make sure not to keep appending new canvases to div
-    if (div.children.length === 0) {
-        canvas = document.createElement("canvas");
-        div.appendChild(canvas);
-    } else {
-        canvas = div.children[0];
-    }
+    var div    = domEl;
+    var canvas = document.createElement("canvas");
+    div.appendChild(canvas);
     
     var ctx   = canvas.getContext("2d");
     var chart = new Chart(ctx).Bar(data, options); // add bar chart
